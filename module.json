@@ -19,7 +19,7 @@
   "styles": [],
   "packs": [],
   "socket": false,
-  "url": "",
-  "manifest": "",
-  "download": ""
+  "url": "https://github.com/Morijinbit/jjk-central47",
+  "manifest": "https://raw.githubusercontent.com/Morijinbit/jjkcentral47terminal/refs/heads/main/module.json",
+  "download": "https://github.com/Morijinbit/jjk-central47/archive/refs/heads/main.zip"
 }
