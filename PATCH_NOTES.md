@@ -1,5 +1,36 @@
 # Central 47 — Patch Notes
 
+## v1.4.0 — Compose overhaul + the Foundry reply fix
+
+### Formatting is no longer flattened
+Posts now **keep the paragraphs and line breaks** you typed. Previously a
+carefully spaced post collapsed into one wall of text the moment you hit POST.
+
+### Rich text in the composer
+The new-thread box gained a formatting bar so your posts can look like the
+long-form ones on the board:
+
+- **Bold / italic / underline**
+- **Four fonts** — MONO, DISPLAY, SERIF, SANS
+- **Colour swatches** — phosphor, mint, cyan, amber, violet, danger, lime
+
+Select text, hit a control. Formatting is sanitised on save and rendered
+faithfully in the thread.
+
+### Posts now get replies on Foundry (the big one)
+Posting a **new thread** inside Foundry generated **zero** replies while
+comment-replies worked fine. Cause: the thread's route switched ~380 ms after
+the reply engine's guard checked it, so on Foundry (no live model → instant
+local replies) every reply was dropped before the thread was "current." The
+route is now set synchronously, so the in-character board reacts to fresh
+posts everywhere.
+
+### Two new boards
+- **/THEORIES** — for takes like "Mira and Sora are the modern Gojo and Sukuna."
+- **/GENERAL** — general discussion that didn't fit the other desks.
+
+---
+
 ## v1.3.0 — The Reception Engine
 
 The cursegate forum no longer hands out flat likes. Every post is now *read*
