@@ -1,5 +1,42 @@
 # Central 47 — Patch Notes
 
+## v3.0.1 — Distributed Synchronisation Layer
+
+The forum is no longer a per-device illusion. It exists once, and every
+terminal observes the same board (RFC-003).
+
+- **Authoritative Forum State** — the module keeps a "Central 47 — Forum
+  State" journal entry (created automatically the first time a GM loads the
+  world after updating; every player is granted ownership). All threads,
+  replies, and vote counts live there. **Do not delete it** — it is the
+  board's database.
+- **Fresh terminals hydrate** — opening the terminal now asks the module for
+  the authoritative state and merges it in. A player who was offline when
+  something was posted sees it the moment they open the board. This fixes
+  the "opened it fresh and there was no post" bug.
+- **Live replication** — while terminals are open, mutations relay instantly
+  over the Foundry socket; the journal write follows and covers anyone who
+  wasn't connected.
+- **Deterministic merges** — every client reconciles state with the same
+  rules: union by id, the more-evolved copy of a node wins (vote ramps keep
+  animating on the origin client and land everywhere), and applying the same
+  event twice is a no-op, so echoes can't duplicate posts.
+- **Deletions propagate** — "clear my posts" now deletes *your* threads and
+  replies only (never other players' content), and publishes tombstones so
+  deleted posts vanish on every client and can never be resurrected by a
+  later merge.
+- **Burst batching** — vote ramps and staggered NPC replies batch into one
+  broadcast/write instead of spamming the socket per tick.
+
+The sync layer transports state only — all forum content is still generated
+inside each terminal by the Intelligence Core (RFC-003 §1.10).
+
+**Upgrade note:** the GM must load the world once after updating so the
+Forum State journal gets created. Until then, sync falls back to live-only
+relay (the pre-3.0.1 behaviour).
+
+---
+
 ## v3.0.0 — Intelligence Core V3
 
 The core is no longer a reply picker — it's a community simulator (RFC-002).

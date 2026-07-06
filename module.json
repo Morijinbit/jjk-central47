@@ -2,18 +2,19 @@
   "id": "jjk-central47",
   "title": "JJK – Central 47 Database Terminal",
   "description": "Jujutsu Sorcery Commission classified network terminal. Opens from the Journal sidebar — available to all players and the GM for in-session roleplay access.",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "compatibility": {
     "minimum": "11",
     "verified": "12"
   },
-  "description-changes": "v3.0.0 — Intelligence Core V3 (RFC-002). Replies are now the output of a full community simulation: per-sentence claim extraction with verbatim kernels, claim-level adjudication against canon (supported / contradicted / contested / open), interpretive framing so eulogies, manifestos, and listings get the right register instead of powerscaling, taboo posts unite the whole board against the poster, threats get flagged as threats, and reply text is composed generatively from verdict + quoted kernel + grounded canon fact — no reply banks. World state, poster reputation, and recycled-rumor memory persist between sessions.",
+  "description-changes": "v3.0.1 — Distributed Synchronisation Layer (RFC-003). The forum is now a shared persistent world object: posts, replies, and votes replicate to every connected client in real time over the Foundry socket, and an authoritative Forum State journal (created automatically by the GM's client, owned by all players) persists the board so a terminal opened fresh — or days later — hydrates with everything anyone has ever posted. Deletions propagate as tombstones and never resurrect.",
   "authors": [
     {
       "name": "Campaign GM"
     }
   ],
   "scripts": [
+    "scripts/c47-sync-core.js",
     "scripts/central47.js"
   ],
   "esmodules": [],
