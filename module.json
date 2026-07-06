@@ -2,12 +2,12 @@
   "id": "jjk-central47",
   "title": "JJK – Central 47 Database Terminal",
   "description": "Jujutsu Sorcery Commission classified network terminal. Opens from the Journal sidebar — available to all players and the GM for in-session roleplay access.",
-  "version": "1.4.0",
+  "version": "3.0.0",
   "compatibility": {
     "minimum": "11",
     "verified": "12"
   },
-  "description-changes": "v1.4.0 — Compose overhaul: posts now KEEP their paragraphs and line breaks, plus a formatting toolbar (bold / italic / underline, four fonts, colour swatches) so your threads can look like everyone else's. Fixed the big one — posting a new thread on Foundry now spawns in-character replies (previously only comment-replies generated). Two new boards: /THEORIES and /GENERAL.",
+  "description-changes": "v3.0.0 — Intelligence Core V3 (RFC-002). Replies are now the output of a full community simulation: per-sentence claim extraction with verbatim kernels, claim-level adjudication against canon (supported / contradicted / contested / open), interpretive framing so eulogies, manifestos, and listings get the right register instead of powerscaling, taboo posts unite the whole board against the poster, threats get flagged as threats, and reply text is composed generatively from verdict + quoted kernel + grounded canon fact — no reply banks. World state, poster reputation, and recycled-rumor memory persist between sessions.",
   "authors": [
     {
       "name": "Campaign GM"
