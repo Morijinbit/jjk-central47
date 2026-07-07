@@ -7,7 +7,7 @@
     "minimum": "11",
     "verified": "12"
   },
-  "description-changes": "v3.0.2 — Sync delivery hardening. The terminal asset URL is now version-busted so player browsers / CDNs can never serve a stale pre-sync terminal (the root cause of 'players see no posts'); the terminal re-sends its hydration handshake until the module answers; the module re-pushes the authoritative board after the terminal loads; the GM client self-heals a missing Forum State journal; and the terminal header now shows a SYNC lamp (green LINKED / amber WAIT) so link problems are visible at a glance.",,
+  "description-changes": "v3.0.2 — Sync delivery hardening. The terminal asset URL is now version-busted so player browsers / CDNs can never serve a stale pre-sync terminal (the root cause of 'players see no posts'); the terminal re-sends its hydration handshake until the module answers; the module re-pushes the authoritative board after the terminal loads; the GM client self-heals a missing Forum State journal; and the terminal header now shows a SYNC lamp (green LINKED / amber WAIT) so link problems are visible at a glance.",
   "authors": [
     {
       "name": "Campaign GM"
