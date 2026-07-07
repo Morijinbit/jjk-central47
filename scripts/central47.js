@@ -89,9 +89,20 @@
 
       // ── iframe ──
       const frame = document.createElement("iframe");
-      frame.src             = ASSET_PATH;
+      // v3.0.2: version-busted URL. The terminal asset is a large static HTML
+      // file that browsers (and hosting CDNs like the Forge) cache aggressively.
+      // Without this, players keep loading a STALE pre-sync terminal long after
+      // the module updates — which presents as "posts never sync for players".
+      const ver = game.modules.get(MODULE_ID)?.version || Date.now();
+      frame.src             = ASSET_PATH + "?v=" + encodeURIComponent(ver);
       frame.style.cssText   = "flex:1;border:none;width:100%;height:100%;display:block;";
       frame.setAttribute("allowfullscreen", "true");
+      // redundancy for a missed hello (RFC-003 §1.4): push the authoritative
+      // board a few times after the asset loads. Merge is idempotent — no dupes.
+      frame.addEventListener("load", () => {
+        [1500, 4000, 9000].forEach((ms) =>
+          setTimeout(() => game.modules.get(MODULE_ID)?.pushFso?.(), ms));
+      });
       this._frameEl = frame;
 
       wrap.appendChild(bar);
@@ -273,7 +284,8 @@
       _writeT = setTimeout(flushFso, 1200);
     }
     async function flushFso() {
-      const doc = getFsoDoc();
+      let doc = getFsoDoc();
+      if (!doc && game.user.isGM) doc = await ensureFsoDoc(); // self-heal (e.g. journal deleted mid-session)
       if (!doc || !_pendingSnap) return; // no FSO yet (GM hasn't loaded the world since updating) — socket relay still covers live clients
       const cur  = readFso();
       const snap = _pendingSnap; _pendingSnap = null;
@@ -300,6 +312,7 @@
       const f = readFso();
       pushToFrame({ threads: f.threads || [], adds: f.adds || {}, dead: f.dead || null, seq: f.seq || 0, fso: true });
     };
+    if (mod) mod.pushFso = pushFso; // used by the iframe load-retry + macros/diagnostics
 
     // iframe → layer: hello (hydrate me) + sync (publish my mutation)
     window.addEventListener("message", (e) => {
@@ -307,6 +320,9 @@
       if (_instance && _instance._frameEl &&
           e.source !== _instance._frameEl.contentWindow) return; // our terminal only
       if (e.data.type === "c47_forum_hello") {
+        const doc = getFsoDoc();
+        console.log("Central 47 | terminal hello — answering with authoritative board" + (doc ? "" : " (no Forum State journal yet)"));
+        if (!doc && game.user.isGM) ensureFsoDoc().then(pushFso); // self-heal: journal missing/deleted
         pushFso();
         return;
       }
@@ -323,6 +339,7 @@
     game.socket.on("module." + MODULE_ID, (data) => {
       if (!data || data.type !== "c47_forum_sync") return;
       if (data._from === game.user?.id) return;   // own echo
+      console.log("Central 47 | live board update relayed from another player");
       pushToFrame({ threads: data.threads || [], adds: data.adds || {}, dead: data.dead || null });
       // redundancy: if the originator's write raced or failed, the GM client
       // also folds the event into the FSO (merge is idempotent — no dupes)
@@ -338,7 +355,7 @@
     ensureFsoDoc();
 
     console.log(
-      "%c⚡ Central 47 Database Terminal v3.0.1 | Intelligence Core V3 + Forum Sync (RFC-003)",
+      "%c⚡ Central 47 Database Terminal v3.0.2 | Intelligence Core V3 + Forum Sync (RFC-003)",
       "color:#5a8a3a;font-family:monospace;font-weight:bold;"
     );
   });
