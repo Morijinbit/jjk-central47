@@ -1,43 +1,5 @@
 # Central 47 — Patch Notes
 
-## v3.0.2 — Sync delivery hardening (the "players see no posts" fix)
-
-Full-topology testing showed the RFC-003 sync logic itself is sound end to
-end (hydration, live relay, journal persistence, late joiners, tombstones).
-What breaks in the field is **delivery of the new code to players**: the
-terminal is one big static HTML file, and browsers/CDNs happily keep serving
-the *old, pre-sync* terminal from cache after the module updates. A player on
-a stale terminal never says hello and never receives the board — which looks
-exactly like "no entries can be seen."
-
-- **Cache-proof terminal loads** — the terminal asset now loads with a
-  `?v=<module version>` URL. Every module update forces every client to fetch
-  the new terminal exactly once. No more stale terminals, ever.
-- **Handshake retries** — the terminal now re-sends `c47_forum_hello` every
-  2.5 s until the module answers with the authoritative board, and the module
-  additionally re-pushes the board 1.5 s / 4 s / 9 s after the terminal
-  loads. A single missed message can no longer strand a terminal empty.
-- **SYNC lamp** — the terminal header now shows the real link state:
-  **SYNC LINKED** (green) = receiving the shared board; **SYNC WAIT**
-  (amber) = inside Foundry but no answer yet (module stale or world not
-  reloaded); **LINK LIVE** = standalone/local mode. Ask players to read the
-  lamp — it turns "it doesn't work" into a diagnosis.
-- **Self-healing Forum State** — if the "Central 47 — Forum State" journal is
-  missing (never created, or deleted mid-session), the GM client now recreates
-  it on the next handshake or write instead of silently dropping persistence.
-- Extra `Central 47 |` console logging on hello, relay-in, and journal writes
-  for quick F12 diagnosis.
-
-**Deploying this update (important):**
-1. Push the updated module folder to GitHub (`module.json`, `scripts/`,
-   `assets/central47.html` must all be the new build — the version bump to
-   3.0.2 is what makes Foundry/Forge actually re-download).
-2. On the Forge / in Foundry: **update the module** (it must show 3.0.2),
-   then **launch the world as GM once** so the Forum State journal exists.
-3. Players just reopen the terminal and check the lamp is green.
-
----
-
 ## v3.0.1 — Distributed Synchronisation Layer
 
 The forum is no longer a per-device illusion. It exists once, and every
