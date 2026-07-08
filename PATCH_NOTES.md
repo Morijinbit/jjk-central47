@@ -1,5 +1,64 @@
 # Central 47 — Patch Notes
 
+## v3.0.3 — Stale-terminal watchdog
+
+Your game showed **LINK LIVE** inside Foundry — a label that only exists in
+the old pre-sync terminal. That proves the server is still serving the old
+files. v3.0.3 makes that failure impossible to miss:
+
+- **Watchdog** — a modern terminal handshakes within seconds of loading. If
+  no handshake arrives 8 s after the iframe loads, the module force-reloads
+  the terminal once with a cache-defeating URL; if it is *still* silent, it
+  shows a permanent on-screen error telling the GM the server's terminal
+  file is an outdated build — instead of failing quietly.
+- Everything from v3.0.2 (version-busted asset URL, hello retries, board
+  re-push after load, Forum State self-heal, SYNC lamp) is included.
+
+**If you see LINK LIVE inside Foundry, the update did not reach the server.**
+Checklist: GitHub repo must contain the new `module.json` (3.0.3),
+`scripts/central47.js`, AND `assets/central47.html`; then update the module
+on Forge/Foundry and confirm it lists 3.0.3; then reload the world as GM.
+
+---
+
+## v3.0.2 — Sync delivery hardening (the "players see no posts" fix)
+
+Full-topology testing showed the RFC-003 sync logic itself is sound end to
+end (hydration, live relay, journal persistence, late joiners, tombstones).
+What breaks in the field is **delivery of the new code to players**: the
+terminal is one big static HTML file, and browsers/CDNs happily keep serving
+the *old, pre-sync* terminal from cache after the module updates. A player on
+a stale terminal never says hello and never receives the board — which looks
+exactly like "no entries can be seen."
+
+- **Cache-proof terminal loads** — the terminal asset now loads with a
+  `?v=<module version>` URL. Every module update forces every client to fetch
+  the new terminal exactly once. No more stale terminals, ever.
+- **Handshake retries** — the terminal now re-sends `c47_forum_hello` every
+  2.5 s until the module answers with the authoritative board, and the module
+  additionally re-pushes the board 1.5 s / 4 s / 9 s after the terminal
+  loads. A single missed message can no longer strand a terminal empty.
+- **SYNC lamp** — the terminal header now shows the real link state:
+  **SYNC LINKED** (green) = receiving the shared board; **SYNC WAIT**
+  (amber) = inside Foundry but no answer yet (module stale or world not
+  reloaded); **LINK LIVE** = standalone/local mode. Ask players to read the
+  lamp — it turns "it doesn't work" into a diagnosis.
+- **Self-healing Forum State** — if the "Central 47 — Forum State" journal is
+  missing (never created, or deleted mid-session), the GM client now recreates
+  it on the next handshake or write instead of silently dropping persistence.
+- Extra `Central 47 |` console logging on hello, relay-in, and journal writes
+  for quick F12 diagnosis.
+
+**Deploying this update (important):**
+1. Push the updated module folder to GitHub (`module.json`, `scripts/`,
+   `assets/central47.html` must all be the new build — the version bump to
+   3.0.2 is what makes Foundry/Forge actually re-download).
+2. On the Forge / in Foundry: **update the module** (it must show 3.0.2),
+   then **launch the world as GM once** so the Forum State journal exists.
+3. Players just reopen the terminal and check the lamp is green.
+
+---
+
 ## v3.0.1 — Distributed Synchronisation Layer
 
 The forum is no longer a per-device illusion. It exists once, and every
